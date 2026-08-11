@@ -1,0 +1,9 @@
+{
+  "name": "Poli İşler",
+  "short_name": "Poli İşler",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f7f9fc",
+  "theme_color": "#2457d6",
+  "lang": "tr"
+}
