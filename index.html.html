@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#5b21b6">
+<title>Poli İşler V5.2</title>
+<style>
+:root{--p:#5b21b6;--pl:#f3e8ff;--bg:#f7f8fc;--txt:#172033;--muted:#6b7280;--line:#e5e7eb;--red:#dc2626;--green:#059669}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px}.authbox{width:min(430px,100%);background:#fff;border:1px solid var(--line);border-radius:24px;padding:28px;box-shadow:0 20px 60px #11182718}
+.logo{font-size:25px;font-weight:900;margin-bottom:24px}.logo b{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:11px;background:linear-gradient(135deg,#5b21b6,#a855f7);color:#fff;margin-right:8px}
+.field{margin-bottom:14px}.field label{display:block;font-size:11px;font-weight:800;color:#667085;margin-bottom:6px}.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px}
+.btn{border:1px solid var(--line);background:#fff;border-radius:11px;padding:10px 14px;font-weight:750}.primary{background:var(--p);border-color:var(--p);color:#fff}.full{width:100%}.link{border:0;background:none;color:var(--p);font-weight:750}
+.err{background:#fef2f2;color:#991b1b;padding:10px;border-radius:10px;font-size:13px;margin-bottom:12px}
+.app{max-width:1200px;margin:auto;padding:20px}.top{display:flex;justify-content:space-between;align-items:center;gap:12px}.top h1{margin:0}.muted{color:var(--muted)}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:18px 0}.stat,.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 8px 25px #1f29370a}.stat{cursor:pointer}.stat strong{display:block;font-size:28px;margin-top:6px}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.tab.active{background:var(--pl);color:var(--p);border-color:#ddd6fe}
+.task{padding:12px;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;cursor:pointer;display:flex;gap:10px;align-items:center}.grow{flex:1}.title{font-weight:800}.meta{font-size:12px;color:var(--muted);margin-top:3px}.pill{font-size:11px;padding:5px 8px;border-radius:20px;background:var(--pl);color:var(--p);font-weight:800}.pill.done{background:#ecfdf5;color:#047857}.pill.late{background:#fef2f2;color:#b91c1c}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--p)}.dot.high{background:var(--red)}.dot.low{background:var(--green)}
+.modalbg{position:fixed;inset:0;background:#0f172a88;display:none;align-items:center;justify-content:center;padding:16px;z-index:10}.modalbg.show{display:flex}.modal{width:min(620px,100%);background:#fff;border-radius:18px;overflow:auto;max-height:92vh}.mh,.mf{padding:16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px}.mf{border-top:1px solid var(--line);border-bottom:0}.mb{padding:18px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:750px){.stats{grid-template-columns:1fr 1fr}.row{grid-template-columns:1fr}.app{padding:14px}.top{align-items:flex-start}}
+</style>
+</head>
+<body>
+
+<section id="auth" class="auth">
+<div class="authbox">
+<div class="logo"><b>P</b>Poli İşler</div>
+<div id="authErr" class="err hidden"></div>
+
+<div id="loginBox">
+<div class="field"><label>E-POSTA</label><input id="loginEmail" type="email"></div>
+<div class="field"><label>ŞİFRE</label><input id="loginPass" type="password"></div>
+<button class="btn primary full" onclick="login()">Giriş Yap</button>
+<p style="text-align:center"><button class="link" onclick="forgot()">Şifremi Unuttum</button></p>
+</div>
+
+<div id="forgotBox" class="hidden">
+<div class="field"><label>E-POSTA</label><input id="forgotEmail" type="email"></div>
+<button class="btn primary full" onclick="sendReset()">Sıfırlama Bağlantısı Gönder</button>
+<p style="text-align:center"><button class="link" onclick="showLogin()">Girişe dön</button></p>
+</div>
+
+<div id="resetBox" class="hidden">
+<div class="field"><label>YENİ ŞİFRE</label><input id="newPass" type="password"></div>
+<button class="btn primary full" onclick="updatePassword()">Şifreyi Değiştir</button>
+</div>
+</div>
+</section>
+
+<section id="app" class="hidden">
+<div class="app">
+<div class="top">
+<div><h1>Poli İşler</h1><div id="hello" class="muted"></div></div>
+<div><button class="btn" onclick="logout()">Çıkış</button> <button class="btn primary" onclick="newTask()">＋ Yeni İş</button></div>
+</div>
+
+<div class="stats">
+<div class="stat" onclick="dashboardFilter('all')">📋 Toplam İş<strong id="stotal">0</strong></div>
+<div class="stat" onclick="dashboardFilter('pending')">⏳ Bekleyen<strong id="spending">0</strong></div>
+<div class="stat" onclick="dashboardFilter('late')">⚠️ Geciken<strong id="slate">0</strong></div>
+<div class="stat" onclick="dashboardFilter('assigned')">👤 Bana Atanan<strong id="sassigned">0</strong></div>
+</div>
+
+<div class="card">
+<div class="tabs">
+<button class="btn tab active" data-filter="all" onclick="filterTasks('all',this)">Tümü</button>
+<button class="btn tab" data-filter="pending" onclick="filterTasks('pending',this)">Bekleyen</button>
+<button class="btn tab" data-filter="assigned" onclick="filterTasks('assigned',this)">Bana Atanan</button>
+<button class="btn tab" data-filter="created" onclick="filterTasks('created',this)">Oluşturduklarım</button>
+<button class="btn tab" data-filter="in_progress" onclick="filterTasks('in_progress',this)">Devam Eden</button>
+<button class="btn tab" data-filter="late" onclick="filterTasks('late',this)">Geciken</button>
+<button class="btn tab" data-filter="completed" onclick="filterTasks('completed',this)">Tamamlanan</button>
+</div>
+<div id="taskList"></div>
+</div>
+</div>
+</section>
+
+<div id="mbg" class="modalbg"><div id="modal" class="modal"></div></div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+
+const supabase=createClient(
+  "https://bkwdetbwbworblmamzvo.supabase.co",
+  "sb_publishable_E9ixF6m1LhIZ69Jpsa4zeA_db7AE9FP"
+);
+
+let me=null,profiles=[],allTasks=[],taskFilter="all";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+function showErr(x){$("authErr").textContent=x?.message||String(x);$("authErr").classList.remove("hidden")}
+function authBox(id){["loginBox","forgotBox","resetBox"].forEach(x=>$(x).classList.toggle("hidden",x!==id));$("authErr").classList.add("hidden")}
+window.showLogin=()=>authBox("loginBox");
+
+window.login=async()=>{
+ const email=$("loginEmail").value.trim(),password=$("loginPass").value;
+ if(!email||!password)return showErr("E-posta ve şifre gerekli.");
+ const {error}=await supabase.auth.signInWithPassword({email,password});
+ if(error)return showErr(error);
+ await start();
+};
+
+window.forgot=()=>{$("forgotEmail").value=$("loginEmail").value.trim();authBox("forgotBox")};
+window.sendReset=async()=>{
+ const email=$("forgotEmail").value.trim();
+ if(!email)return showErr("E-posta gerekli.");
+ const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});
+ if(error)return showErr(error);
+ showErr("Şifre yenileme bağlantısı gönderildi.");
+};
+window.updatePassword=async()=>{
+ const password=$("newPass").value;
+ if(!password||password.length<6)return showErr("Şifre en az 6 karakter olmalı.");
+ const {error}=await supabase.auth.updateUser({password});
+ if(error)return showErr(error);
+ authBox("loginBox");
+};
+window.logout=async()=>{await supabase.auth.signOut();location.reload()};
+
+function modal(h){$("modal").innerHTML=h;$("mbg").classList.add("show")}
+window.closeM=()=>$("mbg").classList.remove("show");
+$("mbg").onclick=e=>{if(e.target.id==="mbg")closeM()};
+
+window.newTask=()=>{
+ modal(`
+ <div class="mh"><h2>Yeni İş Ata</h2><button class="btn" onclick="closeM()">×</button></div>
+ <div class="mb">
+  <div class="field"><label>İŞ BAŞLIĞI</label><input id="tt"></div>
+  <div class="field"><label>AÇIKLAMA</label><textarea id="td" rows="4"></textarea></div>
+  <div class="row">
+   <div class="field"><label>TARİH / SAAT</label><input id="dt" type="datetime-local"></div>
+   <div class="field"><label>ATANACAK KİŞİ</label><select id="au">${profiles.map(p=>`<option value="${p.id}">${esc(p.full_name||"İsimsiz")}${p.id===me.id?" (Ben)":""}</option>`).join("")}</select></div>
+  </div>
+  <div class="field"><label>ÖNCELİK</label><select id="pr"><option value="normal">Normal</option><option value="high">Yüksek</option><option value="low">Düşük</option></select></div>
+ </div>
+ <div class="mf"><button class="btn" onclick="closeM()">Vazgeç</button><button class="btn primary" onclick="saveTask()">İşi Ata</button></div>`);
+};
+
+window.saveTask=async()=>{
+ const title=$("tt").value.trim();
+ if(!title)return alert("İş başlığı gerekli.");
+ const {error}=await supabase.from("tasks").insert({
+   title,
+   description:$("td").value.trim(),
+   due_date:$("dt").value?new Date($("dt").value).toISOString():null,
+   created_by:me.id,
+   assigned_to:$("au").value,
+   status:"pending",
+   priority:$("pr").value
+ });
+ if(error)return alert("İş oluşturulamadı: "+error.message);
+ closeM();await loadTasks();
+};
+
+window.openTask=id=>{
+ const t=allTasks.find(x=>String(x.id)===String(id));if(!t)return;
+ const a=profiles.find(p=>p.id===t.assigned_to),c=profiles.find(p=>p.id===t.created_by);
+ const due=t.due_date?new Date(t.due_date).toLocaleString("tr-TR",{dateStyle:"full",timeStyle:"short"}):"Tarih belirtilmedi";
+ modal(`<div class="mh"><h2>${esc(t.title)}</h2><button class="btn" onclick="closeM()">×</button></div>
+ <div class="mb"><p>${esc(t.description||"Açıklama yok.")}</p>
+ <div class="task"><div class="grow"><b>📅 ${esc(due)}</b></div></div>
+ <div class="task"><div class="grow"><b>Atanan:</b> ${esc(a?.full_name||"—")}<div class="meta">Atayan: ${esc(c?.full_name||"—")}</div></div></div></div>
+ <div class="mf"><button class="btn" onclick="changeStatus('${t.id}','pending')">Bekliyor</button><button class="btn" onclick="changeStatus('${t.id}','in_progress')">Devam Ediyor</button><button class="btn primary" onclick="changeStatus('${t.id}','completed')">Tamamlandı</button></div>`);
+};
+
+window.changeStatus=async(id,status)=>{
+ const {error}=await supabase.from("tasks").update({status}).eq("id",id);
+ if(error)return alert("İş durumu güncellenemedi: "+error.message);
+ closeM();await loadTasks();
+};
+
+function row(t){
+ const a=profiles.find(p=>p.id===t.assigned_to),c=profiles.find(p=>p.id===t.created_by);
+ const d=t.due_date?new Date(t.due_date):null,late=d&&d<new Date()&&t.status!=="completed";
+ const ds=d?d.toLocaleString("tr-TR",{dateStyle:"short",timeStyle:"short"}):"Tarih yok";
+ const st=t.status==="completed"?"Tamamlandı":late?"Gecikti":t.status==="in_progress"?"Devam ediyor":"Bekliyor";
+ return `<div class="task" onclick="openTask('${t.id}')"><span class="dot ${t.priority==="high"?"high":t.priority==="low"?"low":""}"></span><div class="grow"><div class="title">${esc(t.title)}</div><div class="meta">${esc(ds)} · Atanan: ${esc(a?.full_name||"—")} · Atayan: ${esc(c?.full_name||"—")}</div></div><span class="pill ${t.status==="completed"?"done":late?"late":""}">${st}</span></div>`;
+}
+
+window.loadTasks=async()=>{
+ const {data,error}=await supabase.from("tasks").select("*").order("due_date",{ascending:true});
+ if(error)return alert("İşler alınamadı: "+error.message);
+ allTasks=(data||[]).filter(t=>t.created_by===me.id||t.assigned_to===me.id);
+ render();
+};
+
+function render(){
+ const now=new Date();
+ $("stotal").textContent=allTasks.length;
+ $("spending").textContent=allTasks.filter(t=>t.status==="pending").length;
+ $("slate").textContent=allTasks.filter(t=>t.due_date&&new Date(t.due_date)<now&&t.status!=="completed").length;
+ $("sassigned").textContent=allTasks.filter(t=>t.assigned_to===me.id).length;
+ let a=[...allTasks];
+ if(taskFilter==="pending")a=a.filter(t=>t.status==="pending");
+ if(taskFilter==="assigned")a=a.filter(t=>t.assigned_to===me.id);
+ if(taskFilter==="created")a=a.filter(t=>t.created_by===me.id);
+ if(taskFilter==="in_progress")a=a.filter(t=>t.status==="in_progress");
+ if(taskFilter==="late")a=a.filter(t=>t.due_date&&new Date(t.due_date)<now&&t.status!=="completed");
+ if(taskFilter==="completed")a=a.filter(t=>t.status==="completed");
+ $("taskList").innerHTML=a.map(row).join("")||'<div class="muted">Bu filtrede iş yok.</div>';
+}
+
+window.filterTasks=(f,el)=>{taskFilter=f;document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));el.classList.add("active");render()};
+window.dashboardFilter=f=>{taskFilter=f;document.querySelectorAll(".tab").forEach(x=>x.classList.toggle("active",x.dataset.filter===f));render();document.getElementById("taskList").scrollIntoView({behavior:"smooth"})};
+
+async function loadProfiles(){
+ const {data,error}=await supabase.from("profiles").select("id,full_name,role").order("full_name");
+ if(error)return alert("Ekip bilgileri alınamadı: "+error.message);
+ profiles=data||[];
+}
+
+async function start(){
+ const {data:{session},error}=await supabase.auth.getSession();
+ if(error)return showErr(error);
+ if(!session)return;
+ me=session.user;
+ let {data:p,error:pe}=await supabase.from("profiles").select("*").eq("id",me.id).maybeSingle();
+ if(pe)return showErr("Profil alınamadı: "+pe.message);
+ if(!p){
+   const created=await supabase.from("profiles").insert({id:me.id,full_name:me.user_metadata?.full_name||me.email,role:"user"}).select("*").single();
+   if(created.error)return showErr("Profil oluşturulamadı: "+created.error.message);
+   p=created.data;
+ }
+ $("auth").classList.add("hidden");$("app").classList.remove("hidden");
+ $("hello").textContent="Hoş geldin, "+(p.full_name||me.email);
+ await loadProfiles();await loadTasks();
+}
+
+supabase.auth.onAuthStateChange(event=>{if(event==="PASSWORD_RECOVERY")authBox("resetBox")});
+start();
+</script>
+</body></html>
