@@ -1,0 +1,359 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#0b1220">
+<title>Poli İşler V5.6</title>
+<style>
+:root{
+  --bg:#0b1220;--panel:#111b2d;--panel2:#152238;--line:#24324a;--txt:#f5f7fb;--muted:#94a3b8;
+  --p:#7c3aed;--p2:#a855f7;--green:#22c55e;--blue:#3b82f6;--amber:#f59e0b;--red:#ef4444;--cyan:#14b8a6;
+  --shadow:0 18px 50px rgba(0,0,0,.25)
+}
+*{box-sizing:border-box}
+body{margin:0;background:linear-gradient(180deg,#0a1120,#0c1423);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input,textarea,select{font:inherit}button{cursor:pointer}.hidden{display:none!important}
+.auth{min-height:100vh;display:grid;place-items:center;padding:20px}
+.authbox{width:min(430px,100%);background:rgba(17,27,45,.94);border:1px solid var(--line);border-radius:26px;padding:30px;box-shadow:var(--shadow)}
+.logo{font-size:25px;font-weight:900;margin-bottom:24px}.logo b,.brandMark{display:inline-grid;place-items:center;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,var(--p),var(--p2));color:#fff;margin-right:9px}
+.field{margin-bottom:14px}.field label{display:block;font-size:11px;font-weight:800;color:#cbd5e1;margin-bottom:6px}
+.field input,.field textarea,.field select{width:100%;padding:12px;border:1px solid var(--line);border-radius:12px;outline:0;background:#0d1728;color:#fff}
+.field input:focus,.field textarea:focus,.field select:focus{border-color:#8b5cf6;box-shadow:0 0 0 3px #7c3aed22}
+.btn{border:1px solid var(--line);background:#111b2d;color:#e5e7eb;border-radius:11px;padding:10px 14px;font-weight:750}
+.btn:hover{background:#18243a}.primary{background:linear-gradient(135deg,var(--p),#5b21b6);border-color:#7c3aed;color:#fff}.full{width:100%}.link{border:0;background:none;color:#c084fc;font-weight:750}
+.err{background:#3b1015;color:#fecaca;padding:10px;border-radius:10px;font-size:13px;margin-bottom:12px}
+
+.shell{min-height:100vh}.sidebar{position:fixed;inset:0 auto 0 0;width:270px;background:#0d1626;border-right:1px solid var(--line);padding:20px 14px;z-index:30}
+.brand{display:flex;align-items:center;padding:3px 9px 26px;font-size:22px;font-weight:900}
+.nav{display:grid;gap:5px}.nav button{border:0;background:none;text-align:left;padding:12px 13px;border-radius:12px;font-weight:750;color:#d4d9e3}
+.nav button.active,.nav button:hover{background:linear-gradient(90deg,#3b2d73,#2a2451);color:#fff}
+.sideProfile{position:absolute;left:14px;right:14px;bottom:16px;border-top:1px solid var(--line);padding-top:14px}
+.sideCard{background:#111b2d;border:1px solid var(--line);border-radius:14px;padding:11px;display:flex;gap:10px;align-items:center}
+.sideUser{font-weight:800;font-size:13px}.sideMail{font-size:11px;color:var(--muted);margin-top:2px;overflow:hidden;text-overflow:ellipsis}
+
+.main{margin-left:270px;padding:24px;max-width:1500px}.top{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-bottom:22px}
+.top h1{margin:0;font-size:28px}.muted{color:var(--muted)}.hello{font-size:12px;margin-bottom:4px}.actions{display:flex;gap:8px;align-items:center}.bell{position:relative}.badge{position:absolute;top:-7px;right:-7px;background:var(--red);color:#fff;border-radius:999px;font-size:10px;min-width:18px;height:18px;display:grid;place-items:center;padding:0 5px}
+
+.view{display:none}.view.active{display:block}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:18px}
+.stat,.card{background:linear-gradient(180deg,#111b2d,#0f1a2b);border:1px solid var(--line);border-radius:18px;box-shadow:var(--shadow)}
+.stat{padding:17px;cursor:pointer;transition:.15s}.stat:hover{transform:translateY(-2px);border-color:#4c3c74}.stat small{color:#c4cbd7;font-weight:650}.stat strong{display:block;font-size:30px;margin-top:7px}.statIcon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;font-size:21px;margin-bottom:12px}
+.iPurple{background:#4c1d95}.iAmber{background:#7c4a03}.iRed{background:#7f1d1d}.iBlue{background:#1d4ed8}.iGreen{background:#166534}.iCyan{background:#0f766e}
+.cardHead{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;gap:10px}.cardHead h2{margin:0;font-size:18px}.content{padding:15px}
+.dashboardGrid{display:grid;grid-template-columns:1.25fr .75fr;gap:16px}
+.quickGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.quickTile{padding:14px;border:1px solid var(--line);border-radius:14px;text-align:center;background:#111b2d}.quickTile .ico{font-size:24px;margin-bottom:8px}.quickTile b{display:block}.quickTile span{font-size:11px;color:var(--muted)}
+
+.categoryBar{display:grid;grid-template-columns:repeat(8,1fr);gap:10px}.categoryBtn{padding:12px 8px;border:1px solid var(--line);border-radius:13px;text-align:center;background:#101b2d;color:#e5e7eb}.categoryBtn.active{border-color:#7c3aed;background:#251744}.categoryBtn .catIcon{font-size:21px;display:block;margin-bottom:7px}
+
+.task,.notification,.userRow{padding:13px;border-bottom:1px solid var(--line);display:flex;gap:10px;align-items:center;cursor:pointer}
+.task:last-child,.notification:last-child,.userRow:last-child{border-bottom:0}.task:hover,.notification:hover,.userRow:hover{background:#121f33}.notification.unread{background:#1d1531}
+.grow{flex:1;min-width:0}.title{font-weight:800}.meta{font-size:12px;color:var(--muted);margin-top:4px}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--p);flex:none}.dot.high{background:var(--red)}.dot.low{background:var(--green)}
+.pill{font-size:11px;padding:5px 8px;border-radius:20px;background:#2f1f53;color:#c4b5fd;font-weight:800;white-space:nowrap}.pill.done{background:#123524;color:#86efac}.pill.late{background:#3f1719;color:#fca5a5}.pill.blue{background:#102c55;color:#93c5fd}.pill.amber{background:#3b2a0d;color:#fbbf24}
+.avatar{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,#6d28d9,#312e81)}
+.personAction{color:#c084fc;border-color:#5b3b87;background:#151127}
+
+.calendarWrap{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:16px}.calendarToolbar{padding:16px 18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px}
+.calendarToolbar strong{font-size:18px;text-transform:capitalize}.calendarGrid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;padding:12px}.dow{text-align:center;font-size:11px;font-weight:800;color:var(--muted);padding:6px}
+.day{min-height:105px;border:1px solid var(--line);border-radius:12px;background:#0f1a2b;padding:8px;cursor:pointer;transition:.15s;overflow:hidden}.day:hover{border-color:#5b3b87}.day.other{opacity:.32}.day.today{border:2px solid #8b5cf6;padding:7px}.daynum{font-size:12px;font-weight:850;display:flex;justify-content:space-between}
+.calEvent{margin-top:6px;font-size:10px;font-weight:750;padding:5px 6px;border-radius:7px;background:#2f1f53;color:#d8b4fe;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.calEvent.done{background:#123524;color:#86efac;text-decoration:line-through}
+.agendaItem{padding:12px 0;border-bottom:1px solid var(--line)}.agendaItem:last-child{border-bottom:0}.agendaDate{font-size:11px;font-weight:800;color:#c084fc}.empty{padding:32px 10px;text-align:center;color:var(--muted)}
+
+.sectionGap{margin-top:18px}.shortcutPanel{margin-top:18px}
+.modalbg{position:fixed;inset:0;background:#020617cc;backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}.modalbg.show{display:flex}
+.modal{width:min(650px,100%);background:#0f1a2b;border:1px solid var(--line);border-radius:22px;overflow:auto;max-height:92vh}.mh,.mf{padding:16px 19px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px;align-items:center}.mh h2{margin:0;font-size:19px}.mf{border-top:1px solid var(--line);border-bottom:0;background:#0b1423}.mb{padding:19px}.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.mobileNav{display:none}
+
+@media(max-width:1100px){.categoryBar{grid-template-columns:repeat(4,1fr)}.quickGrid{grid-template-columns:repeat(2,1fr)}.dashboardGrid,.calendarWrap{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}}
+@media(max-width:800px){
+ .sidebar{display:none}.main{margin:0;padding:15px 14px 84px}.top h1{font-size:24px}.top{align-items:flex-start}.actions{flex-wrap:wrap;justify-content:flex-end}.stats{grid-template-columns:1fr 1fr}
+ .categoryBar{grid-template-columns:repeat(4,1fr);gap:7px}.categoryBtn{padding:10px 5px;font-size:11px}.categoryBtn .catIcon{font-size:18px}
+ .mobileNav{display:flex;position:fixed;z-index:50;bottom:0;left:0;right:0;height:66px;background:#0d1626;border-top:1px solid var(--line);justify-content:space-around}
+ .mobileNav button{border:0;background:none;color:#94a3b8;font-size:10px;font-weight:800}.mobileNav button.active{color:#c084fc}.mobileNav span{display:block;font-size:20px;margin-bottom:2px}
+ .calendarGrid{gap:3px;padding:7px}.day{min-height:72px;padding:5px}.day.today{padding:4px}.calEvent{font-size:8px;padding:4px}.dow{font-size:9px}.row{grid-template-columns:1fr}
+ .quickGrid{grid-template-columns:1fr 1fr}.personAction{padding:8px 10px}
+}
+</style>
+</head>
+<body>
+
+<section id="auth" class="auth">
+<div class="authbox">
+<div class="logo"><b>P</b>Poli İşler</div>
+<div id="authErr" class="err hidden"></div>
+<div id="loginBox">
+<div class="field"><label>E-POSTA</label><input id="loginEmail" type="email" autocomplete="email"></div>
+<div class="field"><label>ŞİFRE</label><input id="loginPass" type="password" autocomplete="current-password"></div>
+<button class="btn primary full" onclick="login()">Giriş Yap</button>
+<p style="text-align:center"><button class="link" onclick="forgot()">Şifremi Unuttum</button></p>
+</div>
+<div id="forgotBox" class="hidden">
+<div class="field"><label>E-POSTA</label><input id="forgotEmail" type="email"></div>
+<button class="btn primary full" onclick="sendReset()">Sıfırlama Bağlantısı Gönder</button>
+<p style="text-align:center"><button class="link" onclick="showLogin()">Girişe dön</button></p>
+</div>
+<div id="resetBox" class="hidden">
+<div class="field"><label>YENİ ŞİFRE</label><input id="newPass" type="password"></div>
+<button class="btn primary full" onclick="updatePassword()">Şifreyi Değiştir</button>
+</div>
+</div>
+</section>
+
+<section id="app" class="hidden shell">
+<aside class="sidebar">
+<div class="brand"><span class="brandMark">P</span> Poli İşler</div>
+<nav class="nav">
+<button class="active" data-view="home">⌂ &nbsp; Ana Sayfa</button>
+<button data-view="tasks">✓ &nbsp; İşlerim</button>
+<button data-view="calendar">▣ &nbsp; Kişisel Ajandam</button>
+<button data-view="team">👥 &nbsp; Kişiler</button>
+<button onclick="newAssignedTask()">➕ &nbsp; İş Ata</button>
+<button onclick="openNotifications()">🔔 &nbsp; Bildirimler</button>
+</nav>
+<div class="sideProfile"><div class="sideCard"><div class="avatar" id="sideAvatar">P</div><div><div class="sideUser" id="sideUser"></div><div class="sideMail" id="sideMail"></div></div></div></div>
+</aside>
+
+<main class="main">
+<div class="top">
+<div><div id="hello" class="hello"></div><h1 id="pageTitle">Ana Sayfa</h1><div id="pageSub" class="muted">İşlerini ve ajandanı tek yerden yönet.</div></div>
+<div class="actions">
+<button class="btn bell" onclick="openNotifications()">🔔<span id="notifBadge" class="badge hidden">0</span></button>
+<button class="btn primary" onclick="newTask()">＋ Yeni İş</button>
+</div>
+</div>
+
+<section id="home" class="view active">
+<div class="stats">
+<div class="stat" onclick="goFilter('all')"><div class="statIcon iPurple">📋</div><small>Toplam İş</small><strong id="stotal">0</strong><span class="muted">Tümü</span></div>
+<div class="stat" onclick="goFilter('pending')"><div class="statIcon iAmber">⌛</div><small>Bekleyen</small><strong id="spending">0</strong><span class="muted">Bekleyen</span></div>
+<div class="stat" onclick="goFilter('late')"><div class="statIcon iRed">⚠</div><small>Geciken</small><strong id="slate">0</strong><span class="muted">Geciken</span></div>
+<div class="stat" onclick="goFilter('assigned')"><div class="statIcon iBlue">👥</div><small>Bana Atanan</small><strong id="sassigned">0</strong><span class="muted">Atanan</span></div>
+</div>
+
+<div class="card">
+<div class="cardHead"><h2>İş Kategorileri</h2></div>
+<div class="content categoryBar">
+<button class="categoryBtn active" data-filter="all" onclick="goFilter('all')"><span class="catIcon">▦</span>Tümü</button>
+<button class="categoryBtn" data-filter="personal" onclick="goFilter('personal')"><span class="catIcon">👤</span>Kişisel</button>
+<button class="categoryBtn" data-filter="pending" onclick="goFilter('pending')"><span class="catIcon">⌛</span>Bekleyen</button>
+<button class="categoryBtn" data-filter="assigned" onclick="goFilter('assigned')"><span class="catIcon">👥</span>Bana Atanan</button>
+<button class="categoryBtn" data-filter="created" onclick="goFilter('created')"><span class="catIcon">💬</span>Oluşturduklarım</button>
+<button class="categoryBtn" data-filter="in_progress" onclick="goFilter('in_progress')"><span class="catIcon">▶</span>Devam Eden</button>
+<button class="categoryBtn" data-filter="late" onclick="goFilter('late')"><span class="catIcon">⚠</span>Geciken</button>
+<button class="categoryBtn" data-filter="completed" onclick="goFilter('completed')"><span class="catIcon">✓</span>Tamamlanan</button>
+</div>
+</div>
+
+<div class="dashboardGrid sectionGap">
+<div class="card"><div class="cardHead"><h2>Yaklaşan İşlerim</h2><button class="link" onclick="goFilter('all')">Tümünü Gör ›</button></div><div id="upcomingList"></div></div>
+<div class="card"><div class="cardHead"><h2>Hızlı Erişim</h2></div><div class="content quickGrid">
+<button class="quickTile" onclick="newAssignedTask()"><div class="ico">＋</div><b>Yeni İş</b><span>Oluştur</span></button>
+<button class="quickTile" onclick="showView('calendar')"><div class="ico">📅</div><b>Ajandam</b><span>Kişisel işler</span></button>
+<button class="quickTile" onclick="showView('team')"><div class="ico">👥</div><b>Kişiler</b><span>Ekip listesi</span></button>
+<button class="quickTile" onclick="goFilter('all')"><div class="ico">📊</div><b>İşler</b><span>Tüm görevler</span></button>
+</div></div>
+</div>
+
+<div class="card sectionGap">
+<div class="cardHead"><h2>Kişiler</h2><button class="link" onclick="showView('team')">Tümünü Gör ›</button></div>
+<div id="homePeople"></div>
+</div>
+</section>
+
+<section id="tasks" class="view">
+<div class="card">
+<div class="cardHead"><h2>İşlerim</h2><button class="btn primary" onclick="newTask()">＋ Yeni İş</button></div>
+<div class="content">
+<div class="categoryBar">
+<button class="categoryBtn active" data-filter="all" onclick="filterTasks('all',this)"><span class="catIcon">▦</span>Tümü</button>
+<button class="categoryBtn" data-filter="personal" onclick="filterTasks('personal',this)"><span class="catIcon">👤</span>Kişisel</button>
+<button class="categoryBtn" data-filter="pending" onclick="filterTasks('pending',this)"><span class="catIcon">⌛</span>Bekleyen</button>
+<button class="categoryBtn" data-filter="assigned" onclick="filterTasks('assigned',this)"><span class="catIcon">👥</span>Bana Atanan</button>
+<button class="categoryBtn" data-filter="created" onclick="filterTasks('created',this)"><span class="catIcon">💬</span>Oluşturduklarım</button>
+<button class="categoryBtn" data-filter="in_progress" onclick="filterTasks('in_progress',this)"><span class="catIcon">▶</span>Devam Eden</button>
+<button class="categoryBtn" data-filter="late" onclick="filterTasks('late',this)"><span class="catIcon">⚠</span>Geciken</button>
+<button class="categoryBtn" data-filter="completed" onclick="filterTasks('completed',this)"><span class="catIcon">✓</span>Tamamlanan</button>
+</div>
+</div>
+<div id="taskList"></div>
+</div>
+</section>
+
+<section id="calendar" class="view">
+<div class="calendarWrap">
+<div class="card">
+<div class="calendarToolbar">
+<button class="btn" onclick="moveMonth(-1)">‹</button><strong id="monthTitle"></strong>
+<div><button class="btn" onclick="goToday()">Bugün</button> <button class="btn primary" onclick="newPersonalTask()">＋ Kişisel İş</button></div>
+<button class="btn" onclick="moveMonth(1)">›</button>
+</div>
+<div class="calendarGrid" id="calendarGrid"></div>
+</div>
+<div class="card"><div class="cardHead"><h2>Yaklaşan Kişisel İşler</h2></div><div class="content" id="agendaList"></div></div>
+</div>
+</section>
+
+<section id="team" class="view">
+<div class="card"><div class="cardHead"><h2>Kişiler</h2><button class="btn primary" onclick="newAssignedTask()">＋ İş Ata</button></div><div id="teamList"></div></div>
+</section>
+</main>
+
+<nav class="mobileNav">
+<button class="active" data-view="home"><span>⌂</span>Ana Sayfa</button>
+<button data-view="tasks"><span>✓</span>İşlerim</button>
+<button onclick="newTask()"><span style="font-size:28px">＋</span>Yeni</button>
+<button data-view="calendar"><span>📅</span>Ajandam</button>
+<button data-view="team"><span>👥</span>Kişiler</button>
+</nav>
+</section>
+
+<div id="mbg" class="modalbg"><div id="modal" class="modal"></div></div>
+
+<script type="module">
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm";
+const supabase=createClient("https://bkwdetbwbworblmamzvo.supabase.co","sb_publishable_E9ixF6m1LhIZ69Jpsa4zeA_db7AE9FP");
+
+let me=null,profile=null,profiles=[],allTasks=[],taskFilter="all",notifications=[],lastUnreadCount=0,audioReady=false,calDate=new Date();
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
+
+function showErr(x){$("authErr").textContent=x?.message||String(x);$("authErr").classList.remove("hidden")}
+function authBox(id){["loginBox","forgotBox","resetBox"].forEach(x=>$(x).classList.toggle("hidden",x!==id));$("authErr").classList.add("hidden")}
+window.showLogin=()=>authBox("loginBox");
+window.login=async()=>{const email=$("loginEmail").value.trim(),password=$("loginPass").value;if(!email||!password)return showErr("E-posta ve şifre gerekli.");const {error}=await supabase.auth.signInWithPassword({email,password});if(error)return showErr(error);audioReady=true;await start()};
+window.forgot=()=>{$("forgotEmail").value=$("loginEmail").value.trim();authBox("forgotBox")};
+window.sendReset=async()=>{const email=$("forgotEmail").value.trim();if(!email)return showErr("E-posta gerekli.");const {error}=await supabase.auth.resetPasswordForEmail(email,{redirectTo:location.origin+location.pathname});if(error)return showErr(error);showErr("Şifre yenileme bağlantısı gönderildi.")};
+window.updatePassword=async()=>{const password=$("newPass").value;if(!password||password.length<6)return showErr("Şifre en az 6 karakter olmalı.");const {error}=await supabase.auth.updateUser({password});if(error)return showErr(error);authBox("loginBox")};
+
+function modal(h){$("modal").innerHTML=h;$("mbg").classList.add("show")}window.closeM=()=>$("mbg").classList.remove("show");$("mbg").onclick=e=>{if(e.target.id==="mbg")closeM()};
+function playNotificationSound(){if(!audioReady)return;try{const ctx=new(window.AudioContext||window.webkitAudioContext)(),o=ctx.createOscillator(),g=ctx.createGain();o.frequency.value=820;g.gain.value=.08;o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+.18)}catch(e){}}
+
+window.showView=v=>{document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));$(v).classList.add("active");document.querySelectorAll("[data-view]").forEach(x=>x.classList.toggle("active",x.dataset.view===v));const map={home:["Ana Sayfa","İşlerini ve ajandanı tek yerden yönet."],tasks:["İşlerim","Kişisel ve atanan işleri takip et."],calendar:["Kişisel Ajandam","Sadece sana ait kişisel takvim ve işler."],team:["Kişiler","Ekip arkadaşlarını gör ve iş ata."]};$("pageTitle").textContent=map[v][0];$("pageSub").textContent=map[v][1];if(v==="calendar")renderCalendar()};
+document.querySelectorAll("[data-view]").forEach(x=>x.onclick=()=>showView(x.dataset.view));
+
+window.newTask=(presetType="personal",presetDate="")=>{
+ const isAssigned=presetType==="assigned";
+ modal(`<div class="mh"><h2>${isAssigned?"Yeni İş Ata":"Yeni İş"}</h2><button class="btn" onclick="closeM()">×</button></div>
+ <div class="mb">
+  <div class="field"><label>İŞ BAŞLIĞI</label><input id="tt" placeholder="Örn. Servis firmasıyla görüş"></div>
+  <div class="field"><label>AÇIKLAMA</label><textarea id="td" rows="4"></textarea></div>
+  <div class="field"><label>TARİH / SAAT</label><input id="dt" type="datetime-local" value="${presetDate}"></div>
+  <div class="field"><label>İŞ TÜRÜ</label><select id="taskType" onchange="toggleAssignee()"><option value="personal" ${!isAssigned?"selected":""}>Kişisel İş</option><option value="assigned" ${isAssigned?"selected":""}>Birine Atanacak İş</option></select></div>
+  <div class="field" id="assigneeField" style="display:${isAssigned?"block":"none"}"><label>ATANACAK KİŞİ</label><select id="au">${profiles.map(p=>`<option value="${p.id}">${esc(p.full_name||"İsimsiz")}${p.id===me.id?" (Ben)":""}</option>`).join("")}</select></div>
+  <div class="field"><label>ÖNCELİK</label><select id="pr"><option value="normal">Normal</option><option value="high">Yüksek</option><option value="low">Düşük</option></select></div>
+ </div>
+ <div class="mf"><button class="btn" onclick="closeM()">Vazgeç</button><button class="btn primary" onclick="saveTask()">Kaydet</button></div>`);
+};
+window.newPersonalTask=()=>newTask("personal");window.newAssignedTask=()=>newTask("assigned");
+window.toggleAssignee=()=>{$("assigneeField").style.display=$("taskType").value==="assigned"?"block":"none"};
+
+window.saveTask=async()=>{
+ const title=$("tt").value.trim();if(!title)return alert("İş başlığı gerekli.");
+ const taskType=$("taskType").value,assignedTo=taskType==="assigned"?$("au").value:me.id;
+ const {data:task,error}=await supabase.from("tasks").insert({
+  title,description:$("td").value.trim(),due_date:$("dt").value?new Date($("dt").value).toISOString():null,
+  created_by:me.id,assigned_to:assignedTo,status:"pending",priority:$("pr").value,task_type:taskType
+ }).select("*").single();
+ if(error)return alert("İş oluşturulamadı: "+error.message);
+ if(taskType==="assigned"&&assignedTo!==me.id){
+  const creator=profiles.find(p=>p.id===me.id);
+  await supabase.from("notifications").insert({user_id:assignedTo,task_id:task.id,message:`${creator?.full_name||"Bir kullanıcı"} sana yeni bir iş atadı: ${title}`,is_read:false});
+ }
+ closeM();await loadTasks();await loadNotifications();
+};
+
+window.openTask=id=>{
+ const t=allTasks.find(x=>String(x.id)===String(id));if(!t)return;
+ const a=profiles.find(p=>p.id===t.assigned_to),c=profiles.find(p=>p.id===t.created_by);
+ const due=t.due_date?new Date(t.due_date).toLocaleString("tr-TR",{dateStyle:"full",timeStyle:"short"}):"Tarih belirtilmedi";
+ modal(`<div class="mh"><h2>${esc(t.title)}</h2><button class="btn" onclick="closeM()">×</button></div><div class="mb"><p>${esc(t.description||"Açıklama yok.")}</p>
+ <div class="task"><div class="grow"><b>📅 ${esc(due)}</b><div class="meta">${t.task_type==="personal"?"Kişisel İş":"Atanan İş"}</div></div></div>
+ ${t.task_type==="assigned"?`<div class="task"><div class="grow"><b>Atanan:</b> ${esc(a?.full_name||"—")}<div class="meta">Atayan: ${esc(c?.full_name||"—")}</div></div></div>`:""}</div>
+ <div class="mf"><button class="btn" onclick="changeStatus('${t.id}','pending')">Bekliyor</button><button class="btn" onclick="changeStatus('${t.id}','in_progress')">Devam Ediyor</button><button class="btn primary" onclick="changeStatus('${t.id}','completed')">Tamamlandı</button></div>`);
+};
+window.changeStatus=async(id,status)=>{const {error}=await supabase.from("tasks").update({status}).eq("id",id);if(error)return alert("İş durumu güncellenemedi: "+error.message);closeM();await loadTasks()};
+
+function row(t){
+ const a=profiles.find(p=>p.id===t.assigned_to),d=t.due_date?new Date(t.due_date):null,late=d&&d<new Date()&&t.status!=="completed";
+ const ds=d?d.toLocaleString("tr-TR",{dateStyle:"short",timeStyle:"short"}):"Tarih yok";
+ const st=t.status==="completed"?"Tamamlandı":late?"Gecikti":t.status==="in_progress"?"Devam ediyor":"Bekliyor";
+ const cls=t.status==="completed"?"done":late?"late":t.status==="pending"?"amber":"blue";
+ return `<div class="task" onclick="openTask('${t.id}')"><span class="dot ${t.priority==="high"?"high":t.priority==="low"?"low":""}"></span><div class="grow"><div class="title">${esc(t.title)}</div><div class="meta">📅 ${esc(ds)} · ${t.task_type==="personal"?"Kişisel":"Atanan İş"}${t.task_type==="assigned"?" · "+esc(a?.full_name||"—"):""}</div></div><span class="pill ${cls}">${st}</span><span class="muted">›</span></div>`;
+}
+
+window.loadTasks=async()=>{
+ const {data,error}=await supabase.from("tasks").select("*").order("due_date",{ascending:true});if(error)return alert("İşler alınamadı: "+error.message);
+ allTasks=(data||[]).filter(t=>t.created_by===me.id||t.assigned_to===me.id);renderAll();
+};
+
+function renderAll(){
+ const now=new Date(),personal=allTasks.filter(t=>t.task_type==="personal"&&t.created_by===me.id);
+ $("stotal").textContent=allTasks.length;$("spending").textContent=allTasks.filter(t=>t.status==="pending").length;
+ $("slate").textContent=allTasks.filter(t=>t.due_date&&new Date(t.due_date)<now&&t.status!=="completed").length;$("sassigned").textContent=allTasks.filter(t=>t.task_type==="assigned"&&t.assigned_to===me.id).length;
+ const upcoming=[...allTasks].filter(t=>t.due_date&&new Date(t.due_date)>=now&&t.status!=="completed").sort((a,b)=>new Date(a.due_date)-new Date(b.due_date)).slice(0,6);
+ $("upcomingList").innerHTML=upcoming.map(row).join("")||'<div class="empty">Yaklaşan işin yok.</div>';
+
+ let a=[...allTasks];
+ if(taskFilter==="personal")a=a.filter(t=>t.task_type==="personal"&&t.created_by===me.id);
+ if(taskFilter==="pending")a=a.filter(t=>t.status==="pending");
+ if(taskFilter==="assigned")a=a.filter(t=>t.task_type==="assigned"&&t.assigned_to===me.id);
+ if(taskFilter==="created")a=a.filter(t=>t.task_type==="assigned"&&t.created_by===me.id);
+ if(taskFilter==="in_progress")a=a.filter(t=>t.status==="in_progress");
+ if(taskFilter==="late")a=a.filter(t=>t.due_date&&new Date(t.due_date)<now&&t.status!=="completed");
+ if(taskFilter==="completed")a=a.filter(t=>t.status==="completed");
+ $("taskList").innerHTML=a.map(row).join("")||'<div class="empty">Bu filtrede iş yok.</div>';
+ renderCalendar();renderPeople();
+}
+
+window.filterTasks=(f,el)=>{taskFilter=f;document.querySelectorAll("#tasks .categoryBtn").forEach(x=>x.classList.remove("active"));el.classList.add("active");renderAll()};
+window.goFilter=f=>{taskFilter=f;showView("tasks");document.querySelectorAll("#tasks .categoryBtn").forEach(x=>x.classList.toggle("active",x.dataset.filter===f));document.querySelectorAll("#home .categoryBtn").forEach(x=>x.classList.toggle("active",x.dataset.filter===f));renderAll()};
+
+function renderCalendar(){
+ const personal=allTasks.filter(t=>t.task_type==="personal"&&t.created_by===me.id),y=calDate.getFullYear(),m=calDate.getMonth();
+ $("monthTitle").textContent=calDate.toLocaleDateString("tr-TR",{month:"long",year:"numeric"});
+ const first=new Date(y,m,1),start=(first.getDay()+6)%7;
+ let html=["Pzt","Sal","Çar","Per","Cum","Cmt","Paz"].map(x=>`<div class="dow">${x}</div>`).join("");
+ for(let i=0;i<42;i++){
+  const n=i-start+1,d=new Date(y,m,n),other=d.getMonth()!==m,ds=d.toDateString(),events=personal.filter(t=>t.due_date&&new Date(t.due_date).toDateString()===ds);
+  const isoLocal=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,"0")}-${String(d.getDate()).padStart(2,"0")}T09:00`;
+  html+=`<div class="day ${other?"other":""} ${ds===new Date().toDateString()?"today":""}" onclick="newTask('personal','${isoLocal}')"><div class="daynum"><span>${d.getDate()}</span><span>${events.length?events.length+" iş":""}</span></div>${events.slice(0,3).map(t=>`<div class="calEvent ${t.status==="completed"?"done":""}" onclick="event.stopPropagation();openTask('${t.id}')">${esc(t.title)}</div>`).join("")}</div>`;
+ }
+ $("calendarGrid").innerHTML=html;
+ const upcoming=personal.filter(t=>t.due_date&&new Date(t.due_date)>=new Date()&&t.status!=="completed").sort((a,b)=>new Date(a.due_date)-new Date(b.due_date)).slice(0,8);
+ $("agendaList").innerHTML=upcoming.map(t=>`<div class="agendaItem" onclick="openTask('${t.id}')"><div class="agendaDate">${new Date(t.due_date).toLocaleDateString("tr-TR",{day:"numeric",month:"long",weekday:"short"})}</div><div class="title">${esc(t.title)}</div><div class="meta">${new Date(t.due_date).toLocaleTimeString("tr-TR",{hour:"2-digit",minute:"2-digit"})}</div></div>`).join("")||'<div class="empty">Yaklaşan kişisel işin yok.</div>';
+}
+window.moveMonth=n=>{calDate.setMonth(calDate.getMonth()+n);renderCalendar()};window.goToday=()=>{calDate=new Date();renderCalendar()};
+
+function personHtml(p){
+ const initials=(p.full_name||"?").split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
+ return `<div class="userRow"><div class="avatar">${esc(initials)}</div><div class="grow"><div class="title">${esc(p.full_name||"İsimsiz")}${p.id===me.id?' <span class="pill">Sen</span>':""}</div><div class="meta">${p.id===me.id?esc(me.email):esc(p.role||"user")}</div></div>${p.id===me.id?'<span class="muted">—</span>':`<button class="btn personAction" onclick="event.stopPropagation();assignTo('${p.id}')">👤＋ İş Ata</button>`}</div>`;
+}
+function renderPeople(){
+ $("teamList").innerHTML=profiles.map(personHtml).join("")||'<div class="empty">Kullanıcı yok.</div>';
+ $("homePeople").innerHTML=profiles.slice(0,5).map(personHtml).join("")||'<div class="empty">Kullanıcı yok.</div>';
+}
+window.assignTo=id=>{newTask("assigned");setTimeout(()=>{if($("au"))$("au").value=id},0)};
+
+async function loadProfiles(){const {data,error}=await supabase.from("profiles").select("id,full_name,role").order("full_name");if(error)return alert("Ekip alınamadı: "+error.message);profiles=data||[]}
+
+async function loadNotifications(){
+ if(!me)return;const {data,error}=await supabase.from("notifications").select("*").eq("user_id",me.id).order("created_at",{ascending:false});if(error)return;
+ notifications=data||[];const unread=notifications.filter(n=>!n.is_read).length;$("notifBadge").textContent=unread;$("notifBadge").classList.toggle("hidden",unread===0);
+ if(unread>lastUnreadCount&&lastUnreadCount!==0)playNotificationSound();lastUnreadCount=unread;
+}
+window.openNotifications=()=>{const body=notifications.length?notifications.map(n=>`<div class="notification ${n.is_read?"":"unread"}" onclick="openNotification('${n.id}','${n.task_id||""}')"><div class="grow"><div class="title">${esc(n.message)}</div><div class="meta">${new Date(n.created_at).toLocaleString("tr-TR")}</div></div></div>`).join(""):'<div class="empty">Henüz bildirimin yok.</div>';modal(`<div class="mh"><h2>Bildirimler</h2><button class="btn" onclick="closeM()">×</button></div><div class="mb">${body}</div><div class="mf"><button class="btn" onclick="markAllRead()">Tümünü Okundu Yap</button></div>`)};
+window.openNotification=async(id,taskId)=>{await supabase.from("notifications").update({is_read:true}).eq("id",id);await loadNotifications();closeM();if(taskId)openTask(taskId)};
+window.markAllRead=async()=>{await supabase.from("notifications").update({is_read:true}).eq("user_id",me.id).eq("is_read",false);await loadNotifications();openNotifications()};
+
+async function start(){
+ const {data:{session},error}=await supabase.auth.getSession();if(error)return showErr(error);if(!session)return;me=session.user;
+ let {data:p,error:pe}=await supabase.from("profiles").select("*").eq("id",me.id).maybeSingle();if(pe)return showErr(pe);
+ if(!p){const r=await supabase.from("profiles").insert({id:me.id,full_name:me.user_metadata?.full_name||me.email,role:"user"}).select("*").single();if(r.error)return showErr(r.error);p=r.data}
+ profile=p;$("auth").classList.add("hidden");$("app").classList.remove("hidden");$("hello").textContent="Hoş geldin, "+(p.full_name||me.email)+" 👋";$("sideUser").textContent=p.full_name||me.email;$("sideMail").textContent=me.email;$("sideAvatar").textContent=(p.full_name||"P").split(" ").map(x=>x[0]).slice(0,2).join("").toUpperCase();
+ await loadProfiles();await loadTasks();await loadNotifications();setInterval(loadNotifications,15000);
+}
+supabase.auth.onAuthStateChange(e=>{if(e==="PASSWORD_RECOVERY")authBox("resetBox")});document.addEventListener("click",()=>audioReady=true,{once:true});start();
+</script>
+</body>
+</html>
